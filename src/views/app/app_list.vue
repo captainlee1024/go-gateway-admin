@@ -1,12 +1,29 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.info" placeholder="服务名称/服务描述" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      <el-input
+        v-model="listQuery.info"
+        placeholder="服务名称/服务描述"
+        style="width: 200px;"
+        class="filter-item"
+        @keyup.enter.native="handleFilter"
+      />
+      <el-button
+        v-waves
+        class="filter-item"
+        type="primary"
+        icon="el-icon-search"
+        @click="handleFilter"
+      >
         搜索
       </el-button>
       <router-link :to="'/app/app_create'">
-        <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit">
+        <el-button
+          class="filter-item"
+          style="margin-left: 10px;"
+          type="primary"
+          icon="el-icon-edit"
+        >
           添加租户
         </el-button>
       </router-link>
@@ -22,56 +39,68 @@
       style="width: 100%;"
     >
       <el-table-column label="ID" prop="id" align="center" width="50">
-        <template slot-scope="{row}">
+        <template slot-scope="{ row }">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
       <el-table-column label="app_id" min-width="100px">
-        <template slot-scope="{row}">
+        <template slot-scope="{ row }">
           <span>{{ row.app_id }}</span>
         </template>
       </el-table-column>
       <el-table-column label="租户名称" min-width="120px">
-        <template slot-scope="{row}">
+        <template slot-scope="{ row }">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="秘钥" min-width="160px">
-        <template slot-scope="{row}">
+        <template slot-scope="{ row }">
           <span>{{ row.secret }}</span>
         </template>
       </el-table-column>
       <el-table-column label="QPS" width="80px">
-        <template slot-scope="{row}">
-          <span>{{ row.qps }}</span>
+        <template slot-scope="{ row }">
+          <span>{{ row.real_qps }}</span>
         </template>
       </el-table-column>
       <el-table-column label="日请求量" width="80px">
-        <template slot-scope="{row}">
-          <span>{{ row.qpd }}</span>
+        <template slot-scope="{ row }">
+          <span>{{ row.real_qpd }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <router-link :to="'/app/app_stat/'+row.id">
+      <el-table-column
+        label="操作"
+        align="center"
+        width="300"
+        class-name="small-padding fixed-width"
+      >
+        <template slot-scope="{ row, $index }">
+          <router-link :to="'/app/app_stat/' + row.id">
             <el-button type="primary" size="mini">
               统计
-            </el-button>
-          </router-link>&nbsp;
-          <router-link :to="'/app/app_edit/'+row.id">
+            </el-button> </router-link>&nbsp;
+          <router-link :to="'/app/app_edit/' + row.id">
             <el-button type="primary" size="mini">
               修改
-            </el-button>
-          </router-link>&nbsp;
-          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">
+            </el-button> </router-link>&nbsp;
+          <el-button
+            size="mini"
+            type="danger"
+            @click="handleDelete(row, $index)"
+          >
             删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page_no" :limit.sync="listQuery.page_size" @pagination="getList" />
-
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="listQuery.page_no"
+      :limit.sync="listQuery.page_size"
+      @pagination="getList"
+    />
   </div>
 </template>
 
@@ -156,28 +185,32 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => { // 确定
-        const deleteQuery = {
-          'id': row.id
-        }
-        appDelete(deleteQuery).then(response => {
+      })
+        .then(() => {
+          // 确定
+          const deleteQuery = {
+            id: row.id
+          }
+          appDelete(deleteQuery).then(response => {
+            this.$notify({
+              title: 'Success',
+              message: '删除成功',
+              type: 'success',
+              duration: 2000
+            })
+            // this.list.splice(index, 1)
+            this.getList()
+          })
+        })
+        .catch(() => {
+          // 取消
           this.$notify({
             title: 'Success',
-            message: '删除成功',
-            type: 'success',
+            message: '已取消删除',
+            type: 'info',
             duration: 2000
           })
-          // this.list.splice(index, 1)
-          this.getList()
         })
-      }).catch(() => { // 取消
-        this.$notify({
-          title: 'Success',
-          message: '已取消删除',
-          type: 'info',
-          duration: 2000
-        })
-      })
     }
   }
 }
